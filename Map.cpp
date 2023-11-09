@@ -3,274 +3,32 @@
 #include <iostream>
 #include<vector>
 #include <Windows.h>
-
 Map::Map(void)
 {
 	num=0;
 }
 
+
 Map::~Map(void)
 {
 }
 
-Chess Map::getNext(Chess xe, int dir)
+void Map::iniMap(int size)
 {
-	//Ëã•Ë¢´Êü•ÊâæÊ£ãÂ≠êÊú¨Ë∫´Ë∂ÖÂá∫ËæπÁïå ÂàôËøîÂõûÈîôËØØÊ£ãÂ≠ê
-	if (xe.col < 0 || xe.isBoundry == true) return getErrorChess();
-	Chess tem;
-	switch (dir)
+	this->size=size;
+	this->map=new Chess *[size+2];//…Í«Îµƒø’º‰±»∆Â≈Ã¥Û–°¥Û“ª£¨ «Œ™¡À»√œ¬±Í¥”1ø™ º
+	for(int i=0;i<size+2;i++) map[i]=new Chess[size+2];
+	for(int j=0;j<size+1;j++) map[0][j]=Chess(NONE,-1,-1,0,j,true); 
+	for(int i=0;i<size+1;i++) map[i][0]=Chess(NONE,-1,-1,i,0,true);
+	for(int i=0;i<size+2;i++) map[i][size+1]=Chess(NONE,-1,-1,i,size+1,true);
+	for(int j=0;j<size+2;j++) map[size+1][j]=Chess(NONE,-1,-1,size+1,j,true);
+	for(int i=1;i<=size;i++)
 	{
-	case XLAY:
-		tem = right_Next(xe);
-		break;
-	case XSTD:
-		tem = down_Next(xe);
-		break;
-	case XMAN:
-		tem = right_down_Next(xe);
-		break;
-	case XICE:
-		tem = right_up_Next(xe);
-		break;
-	default:
-		break;
+		for(int j=1;j<=size;j++)
+		{
+			map[i][j]=Chess(NONE,0,0,i,j,false);
+		}
 	}
-	if (tem.col < 0 || tem.isBoundry == true) return Chess("XERRO");
-	return tem;
-}
-
-Chess Map::getPrev(Chess xe, int dir)
-{
-	if (xe.col < 0 || xe.isBoundry == true) return getErrorChess();
-	Chess tem;
-	switch (dir)
-	{
-	case XLAY:
-		tem = left_Next(xe);
-		break;
-	case XSTD:
-		tem = up_Next(xe);
-		break;
-	case XMAN:
-		tem = left_up_Next(xe);
-		break;
-	case XICE:
-		tem = left_down_Next(xe);
-		break;
-	default:
-		break;
-	}
-	if (tem.col < 0 || tem.isBoundry == true) return Chess("XERRO");
-	return tem;
-}
-
-Chess Map::getChess(int x, int y)
-{
-	return map[x][y];
-}
-
-Chess Map::up_Next(Chess xe)
-{
-	if (xe.row <= 0) return getErrorChess();
-	Chess tem = Chess(map[xe.row - 1][xe.col].color,
-		map[xe.row - 1][xe.col].atkValue,
-		map[xe.row - 1][xe.col].defValue,
-		map[xe.row - 1][xe.col].row,
-		map[xe.row - 1][xe.col].col,
-		map[xe.row - 1][xe.col].isBoundry);
-	return tem;
-}
-
-Chess Map::down_Next(Chess xe)
-{
-	if (xe.row >= size + 1) return getErrorChess();
-	Chess tem = Chess(map[xe.row + 1][xe.col].color,
-		map[xe.row + 1][xe.col].atkValue,
-		map[xe.row + 1][xe.col].defValue,
-		map[xe.row + 1][xe.col].row,
-		map[xe.row + 1][xe.col].col,
-		map[xe.row + 1][xe.col].isBoundry);
-	return tem;
-}
-
-Chess Map::left_Next(Chess xe)
-{
-	if (xe.col <= 0) return getErrorChess();
-	Chess tem = Chess(map[xe.row][xe.col - 1].color,
-		map[xe.row][xe.col - 1].atkValue,
-		map[xe.row][xe.col - 1].defValue,
-		map[xe.row][xe.col - 1].row,
-		map[xe.row][xe.col - 1].col,
-		map[xe.row][xe.col - 1].isBoundry);
-	return tem;
-}
-
-Chess Map::right_Next(Chess xe)
-{
-	if (xe.col >= size + 1) return getErrorChess();
-	Chess tem = Chess(map[xe.row][xe.col + 1].color,
-		map[xe.row][xe.col + 1].atkValue,
-		map[xe.row][xe.col + 1].defValue,
-		map[xe.row][xe.col + 1].row,
-		map[xe.row][xe.col + 1].col,
-		map[xe.row][xe.col + 1].isBoundry);
-	return tem;
-}
-
-Chess Map::left_up_Next(Chess xe)
-{
-	if (xe.row <= 0 || xe.col <= 0) return getErrorChess();
-	Chess tem = Chess(map[xe.row - 1][xe.col - 1].color,
-		map[xe.row - 1][xe.col - 1].atkValue,
-		map[xe.row - 1][xe.col - 1].defValue,
-		map[xe.row - 1][xe.col - 1].row,
-		map[xe.row - 1][xe.col - 1].col,
-		map[xe.row - 1][xe.col - 1].isBoundry);
-	return tem;
-}
-
-Chess Map::right_up_Next(Chess xe)
-{
-	if (xe.row <= 0 || xe.col >= size + 1) return getErrorChess();
-	Chess tem = Chess(map[xe.row - 1][xe.col + 1].color,
-		map[xe.row - 1][xe.col + 1].atkValue,
-		map[xe.row - 1][xe.col + 1].defValue,
-		map[xe.row - 1][xe.col + 1].row,
-		map[xe.row - 1][xe.col + 1].col,
-		map[xe.row - 1][xe.col + 1].isBoundry);
-	return tem;
-}
-
-Chess Map::left_down_Next(Chess xe)
-{
-	if (xe.row >= size + 1 || xe.col <= 0) return getErrorChess();
-	Chess tem = Chess(map[xe.row + 1][xe.col - 1].color,
-		map[xe.row + 1][xe.col - 1].atkValue,
-		map[xe.row + 1][xe.col - 1].defValue,
-		map[xe.row + 1][xe.col - 1].row,
-		map[xe.row + 1][xe.col - 1].col,
-		map[xe.row + 1][xe.col - 1].isBoundry);
-	return tem;
-}
-
-Chess Map::right_down_Next(Chess xe)
-{
-	if (xe.row >= size + 1 || xe.col >= size + 1) return getErrorChess();
-	Chess tem = Chess(map[xe.row + 1][xe.col + 1].color,
-		map[xe.row + 1][xe.col + 1].atkValue,
-		map[xe.row + 1][xe.col + 1].defValue,
-		map[xe.row + 1][xe.col + 1].row,
-		map[xe.row + 1][xe.col + 1].col,
-		map[xe.row + 1][xe.col + 1].isBoundry);
-	return tem;
-}
-
-Chess Map::getErrorChess()
-{
-	Chess xe = Chess(XERRO, XERRO, XERRO, XERRO, XERRO, true);
-	return xe;
-}
-
-int Map::up(Chess xe)
-{
-	int count = 0;
-	xe.row--;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row--;
-	}
-	return count;
-}
-
-int Map::down(Chess xe)
-{
-	int count = 0;
-	xe.row++;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row++;
-	}
-	return count;
-}
-
-int Map::left(Chess xe)
-{
-	int count = 0;
-	xe.col--;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.col--;
-	}
-	return count;
-}
-
-int Map::right(Chess xe)
-{
-	int count = 0;
-	xe.col++;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.col++;
-	}
-	return count;
-}
-
-int Map::left_up(Chess xe)
-{
-	int count = 0;
-	xe.row--;
-	xe.col--;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row--;
-		xe.col--;
-	}
-	return count;
-}
-
-int Map::right_up(Chess xe)
-{
-	int count = 0;
-	xe.row--;
-	xe.col++;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row--;
-		xe.col++;
-	}
-	return count;
-}
-
-int Map::left_down(Chess xe)
-{
-	int count = 0;
-	xe.row++; xe.col--;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row++;
-		xe.col--;
-	}
-	return count;
-}
-
-int Map::right_down(Chess xe)
-{
-	int count = 0;
-	xe.row++; xe.col++;
-	while (map[xe.row][xe.col].color == friendColor)
-	{
-		count++;
-		xe.row++;
-		xe.col++;
-	}
-	return count;
 }
 
 int Map::getSize()
@@ -278,28 +36,130 @@ int Map::getSize()
 	return size;
 }
 
-int Map::getAtkValue(Chess xe)
+
+int Map::getFriendColor()
 {
-	return map[xe.row][xe.col].atkValue;
+	return this->friendColor;
 }
 
-int Map::getDefValue(Chess xe)
+void Map::setAtkValue(Chess ce,int atkValue)
 {
-	return map[xe.row][xe.col].defValue;
+	map[ce.row][ce.col].atkValue=atkValue;
+	return;
 }
 
-int Map::getNum(Chess xe, int dir)
+void Map::setDefValue(Chess ce,int defValue)
 {
-	switch (dir)
+	map[ce.row][ce.col].defValue=defValue;
+	return;
+}
+
+int Map::getAtkValue(Chess ce)
+{
+	return map[ce.row][ce.col].atkValue;
+}
+
+int Map::getDefValue(Chess ce)
+{
+	return map[ce.row][ce.col].defValue;
+}
+
+void Map::giveMapFriend()
+{
+	std::cout<<"«Î ‰»Î”—∑Ω∆Â◊”∏ˆ ˝"<<std::endl;
+	int n;
+	std::cin>>n;
+	std::cout<<"«Î ‰»Î"<<n<<"∏ˆ∆Â◊”µƒŒª÷√"<<std::endl;
+	int x,y;
+	for(int i=0;i<n;i++)
 	{
-	case XLAY:
-		return getLayNum(xe);
-	case XSTD:
-		return getStandNum(xe);
-	case XMAN:
-		return getMainNum(xe);
-	case XICE:
-		return getVixeNum(xe);
+		std::cin>>x>>y;
+		map[x][y].color=friendColor;
+	}
+	//system("cls");
+}
+
+void Map::giveMapEnemy()
+{
+	std::cout<<"«Î ‰»Îµ–∑Ω∆Â◊”∏ˆ ˝"<<std::endl;
+	int n;
+	std::cin>>n;
+	std::cout<<"«Î ‰»Î"<<n<<"∏ˆ∆Â◊”µƒŒª÷√"<<std::endl;
+	int x,y;
+	for(int i=0;i<n;i++)
+	{
+		std::cin>>x>>y;
+		map[x][y].color=enemyColor;
+	}
+}
+
+void Map::putAIChess(Chess ce)
+{//≤ª’˚ÃÂ∏≥÷µ£¨ «“ÚŒ™√ª”–±ÿ“™£¨÷ª∏≥colorø…“‘Ω⁄ ° ±º‰
+	Draw dr;
+	numPlus();
+	system("cls");
+	dr.printEndl(5);
+	map[ce.row][ce.col].color=friendColor;
+	/*std::cout<<"ª˙∆˜◊”—’…´: "<<defineToString(map[ce.row][ce.col].color)<<std::endl;
+	std::cout<<"ª˙∆˜¬‰◊”Œª÷√: ("<<ce.row<<","<<ce.col<<")"<<std::endl;
+	Sleep(2000);*/
+	return;
+}
+
+void Map::putPlayChess(Chess ce)
+{
+	numPlus();
+	map[ce.row][ce.col].color=enemyColor;
+	return;
+}
+
+void Map::outputMap()
+{
+	for(int i=1;i<=size;i++)
+	{
+		for (int j=1;j<=size;j++)
+		{
+			//std::cout<<"("<<map[i][j].row<<","<<map[i][j].col<<") ";
+			std::cout<<map[i][j].atkValue<<" ";
+		}
+		std::cout<<std::endl;
+	}
+}
+
+void Map::iniColor(int color)
+{
+	this->friendColor=color;
+	if(friendColor==BLACK) enemyColor=WHITE;
+	else enemyColor=BLACK;
+}
+
+void Map::reverseFriendEnemy()
+{
+	if(this->friendColor==BLACK)
+	{
+		this->friendColor=WHITE;
+		this->enemyColor=BLACK;
+	}
+	else
+	{
+		this->friendColor=BLACK;
+		this->enemyColor=WHITE;
+	}
+	return;
+}
+
+int Map::getNum(Chess ce,int dir)
+{
+	switch(dir)
+	{
+	case LAY:
+		return getLayNum(ce);
+	case STAND:
+		return getStandNum(ce);
+	case MAIN:
+		return getMainNum(ce);
+	case VICE:
+		return getViceNum(ce);
 	default:
 		return 0;
 	}
@@ -310,741 +170,329 @@ int Map::getNum()
 	return this->num;
 }
 
-int Map::getLayNum(Chess xe)
-{
-	int count = 0;
-	count += left(xe);
-	count += right(xe);
-	return count + 1;
-}
-
-int Map::getStandNum(Chess xe)
-{
-	int count = 0;
-	count += up(xe);
-	count += down(xe);
-	return count + 1;
-}
-
-int Map::getMainNum(Chess xe)
-{
-	int count = 0;
-	count += left_up(xe);
-	count += right_down(xe);
-	return count + 1;
-}
-
-int Map::getVixeNum(Chess xe)
-{
-	int count = 0;
-	count += right_up(xe);
-	count += left_down(xe);
-	return count + 1;
-}
-
-int Map::Friend_Color()
-{
-	return this->friendColor;
-}
-
-int Map::L5(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if (xe1.color == xe2.color &&
-		xe2.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::A4(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if (xe1.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::R4(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if ((xe2.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe1.color == XNO &&
-		xe6.color == enemyColor) ||
-		(xe2.color == xe3.color &&
-			xe3.color == xe4.color &&
-			xe4.color == xe5.color &&
-			xe5.color == friendColor &&
-			xe6.color == XNO &&
-			xe1.color == enemyColor)) return 1;
-	return 0;
-}
-
-int Map::R4(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if ((xe1.color == xe2.color &&
-		xe2.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe4.color == XNO) ||
-		(xe1.color == xe4.color &&
-			xe4.color == xe3.color &&
-			xe3.color == xe5.color &&
-			xe5.color == friendColor &&
-			xe2.color == XNO)) return 1;
-	if (xe1.color == xe2.color &&
-		xe2.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe3.color == XNO) return 1;
-	return 0;
-}
-
-int Map::A3(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if (xe1.color == xe5.color &&
-		xe5.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::A3(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if ((xe1.color == xe4.color &&
-		xe4.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == friendColor) ||
-		(xe1.color == xe3.color &&
-			xe3.color == xe6.color &&
-			xe6.color == XNO &&
-			xe2.color == xe4.color &&
-			xe4.color == xe5.color &&
-			xe5.color == friendColor)) return 1;
-	return 0;
-}
-
-int Map::S3(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if (xe1.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe2.color == xe3.color &&
-		xe3.color == XNO) return 1;
-	if (xe1.color == xe2.color &&
-		xe2.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe4.color == xe3.color &&
-		xe3.color == XNO) return 1;
-	if (xe1.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe2.color == xe4.color &&
-		xe4.color == XNO) return 1;
-	return 0;
-}
-
-int Map::S3(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if (xe1.color == xe2.color &&
-		xe2.color == XNO &&
-		xe3.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe5.color == xe6.color &&
-		xe6.color == XNO &&
-		xe3.color == xe4.color &&
-		xe4.color == xe2.color &&
-		xe2.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	if (xe1.color == xe3.color &&
-		xe3.color == XNO &&
-		xe2.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe4.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	if (xe1.color == xe4.color &&
-		xe4.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe3.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	return 0;
-}
-
-int Map::S3(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6, Chess xe7)
-{
-	if (xe1.color == xe7.color &&
-		xe7.color == enemyColor &&
-		xe2.color == xe6.color &&
-		xe6.color == XNO &&
-		xe3.color == xe4.color &&
-		xe4.color == xe5.color &&
-		xe5.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::A2(Chess xe1, Chess xe2, Chess xe3, Chess xe4)
-{
-	if (xe1.color == xe4.color &&
-		xe4.color == friendColor &&
-		xe2.color == xe3.color &&
-		xe3.color == XNO) return 1;
-	return 0;
-}
-
-int Map::A2(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if (xe1.color == xe3.color &&
-		xe3.color == xe5.color &&
-		xe5.color == XNO &&
-		xe2.color == xe4.color &&
-		xe4.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::A2(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if (xe1.color == xe2.color &&
-		xe2.color == xe5.color &&
-		xe5.color == xe6.color &&
-		xe6.color == XNO &&
-		xe3.color == xe4.color &&
-		xe4.color == friendColor) return 1;
-	return 0;
-}
-
-int Map::S2(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5)
-{
-	if (xe1.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe2.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == XNO) return 1;
-	return 0;
-}
-
-int Map::S2(Chess xe1, Chess xe2, Chess xe3, Chess xe4, Chess xe5, Chess xe6)
-{
-	if (xe1.color == xe2.color &&
-		xe2.color == xe3.color &&
-		xe3.color == XNO &&
-		xe5.color == xe4.color &&
-		xe4.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe4.color == xe5.color &&
-		xe5.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe3.color &&
-		xe3.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	if (xe1.color == xe2.color &&
-		xe2.color == xe4.color &&
-		xe4.color == XNO &&
-		xe5.color == xe3.color &&
-		xe3.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe5.color == xe6.color &&
-		xe6.color == xe3.color &&
-		xe3.color == XNO &&
-		xe2.color == xe4.color &&
-		xe4.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	if (xe1.color == xe3.color &&
-		xe3.color == xe4.color &&
-		xe4.color == XNO &&
-		xe2.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe6.color == enemyColor) return 1;
-	if (xe3.color == xe4.color &&
-		xe4.color == xe6.color &&
-		xe6.color == XNO &&
-		xe2.color == xe5.color &&
-		xe5.color == friendColor &&
-		xe1.color == enemyColor) return 1;
-	return 0;
-}
-
-int Map::L5(std::vector<Chess> xe, int n)
-{
-	if (n == 5) return L5(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	return 0;
-}
-
-int Map::A4(std::vector<Chess> xe, int n)
-{
-	if (n == 6) return A4(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	return 0;
-}
-
-int Map::R4(std::vector<Chess> xe, int n)
-{
-	int count = 0;
-	if (n == 5) count += R4(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	if (n == 6) count += R4(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	return count;
-}
-
-int Map::A3(std::vector<Chess> xe, int n)
-{
-	int count = 0;
-	if (n == 5) count += A3(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	if (n == 6) count += A3(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	return count;
-}
-
-int Map::S3(std::vector<Chess> xe, int n)
-{
-	int count = 0;
-	if (n == 5) count += S3(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	if (n == 6) count += S3(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	if (n == 7) count += S3(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5], xe[6]);
-	return count;
-}
-
-int Map::A2(std::vector<Chess> xe, int n)
-{
-	int count = 0;
-	if (n == 4) count += A2(xe[0], xe[1], xe[2], xe[3]);
-	if (n == 5) count += A2(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	if (n == 6) count += A2(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	return count;
-}
-
-int Map::S2(std::vector<Chess> xe, int n)
-{
-	int count = 0;
-	if (n == 5) count += S2(xe[0], xe[1], xe[2], xe[3], xe[4]);
-	if (n == 6) count += S2(xe[0], xe[1], xe[2], xe[3], xe[4], xe[5]);
-	return count;
-}
-
-int Map::L5(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += L5(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::A4(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += A4(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::R4(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += R4(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::A3(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += A3(*it, n);//<=====
-		it++;
-	}
-	return count;
-}
-
-int Map::S3(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += S3(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::A2(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += A2(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::S2(std::vector<std::vector<Chess>> xe, int n)
-{
-	using std::vector;
-	vector<vector<Chess>>::iterator it;
-	int count = 0;
-	it = xe.begin();
-	while (it != xe.end())
-	{
-		if (!XB1_x_OK((*it)))
-		{
-			it++;
-			continue;
-		}
-		count += S2(*it, n);
-		it++;
-	}
-	return count;
-}
-
-int Map::count_L5(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 1; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += L5(vxe, 5);
-	}
-	return count;
-}
-
-int Map::count_A4(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 2; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A4(vxe, 6);
-	}
-	return count;
-}
-
-int Map::count_R4(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 2; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += R4(vxe, 6);
-	}
-	for (int i = 1; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += R4(vxe, 5);
-	}
-	return count;
-}
-
-int Map::count_A3(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 2; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A3(vxe, 6);//<====
-	}
-	for (int i = 2; i <= 4; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A3(vxe, 5);
-	}
-	return count;
-}
-
-int Map::count_S3(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 3; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 7, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += S3(vxe, 7);
-	}
-	for (int i = 2; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += S3(vxe, 6);
-	}
-	for (int i = 1; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += S3(vxe, 5);
-	}
-	return count;
-}
-
-int Map::count_A2(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 3; i <= 4; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A2(vxe, 6);
-	}
-	for (int i = 2; i <= 4; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A2(vxe, 5);
-	}
-	for (int i = 1; i <= 4; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 4, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += A2(vxe, 4);
-	}
-	return count;
-}
-
-int Map::count_S2(Chess xe)
-{
-	using std::vector;
-	int count = 0;
-	for (int i = 2; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 6, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += S2(vxe, 6);
-	}
-	for (int i = 1; i <= 5; i++)
-	{
-		vector<vector<Chess>> vxe = getChessChain(xe, 5, i);
-		if (!Chain_x_OK(vxe)) continue;
-		count += S2(vxe, 5);
-	}
-	return count;
-}
-
-void Map::Map_x_Initialize(int size)
-{
-	this->size=size;
-	this->map=new Chess *[size+2];//Áî≥ËØ∑ÁöÑÁ©∫Èó¥ÊØîÊ£ãÁõòÂ§ß‰∏ÄÔºå‰ΩøÊ£ãÁõò‰ªé1ÂºÄÂßã
-	for(int i=0;i<size+2;i++) map[i]=new Chess[size+2];
-	for(int j=0;j<size+1;j++) map[0][j]=Chess(XNO,-1,-1,0,j,true); 
-	for(int i=0;i<size+1;i++) map[i][0]=Chess(XNO,-1,-1,i,0,true);
-	for(int i=0;i<size+2;i++) map[i][size+1]=Chess(XNO,-1,-1,i,size+1,true);
-	for(int j=0;j<size+2;j++) map[size+1][j]=Chess(XNO,-1,-1,size+1,j,true);
-	for(int i=1;i<=size;i++)
-	{
-		for(int j=1;j<=size;j++)
-		{
-			map[i][j]=Chess(XNO,0,0,i,j,false);
-		}
-	}
-}
-
-void Map::setAtkValue(Chess xe,int atkValue)
-{
-	map[xe.row][xe.col].atkValue=atkValue;
-	return;
-}
-
-void Map::setDefValue(Chess xe,int defValue)
-{
-	map[xe.row][xe.col].defValue=defValue;
-	return;
-}
-
-void Map::Friend_Num()
-{
-	std::cout<< "ËØ∑ËæìÂÖ•ÂèãÊñπÊ£ãÂ≠ê‰∏™Êï∞" <<std::endl;
-	int n;
-	std::cin>>n;
-	std::cout << "ËØ∑ËæìÂÖ•" << n << "‰∏™Ê£ãÂ≠êÁöÑ‰ΩçÁΩÆ" << std::endl;
-	int x,y;
-	for(int i=0;i<n;i++)
-	{
-		std::cin>>x>>y;
-		map[x][y].color=friendColor;
-	}
-	//system("cls");
-}
-
-void Map::Enemy_Num()
-{
-	std::cout << "ËØ∑ËæìÂÖ•ÊïåÊñπÊ£ãÂ≠ê‰∏™Êï∞" << std::endl;
-	int n;
-	std::cin>>n;
-	std::cout << "ËØ∑ËæìÂÖ•" << n << "‰∏™Ê£ãÂ≠êÁöÑ‰ΩçÁΩÆ" << std::endl;
-	int x,y;
-	for(int i=0;i<n;i++)
-	{
-		std::cin>>x>>y;
-		map[x][y].color=enemyColor;
-	}
-}
-
-void Map::putAIChess(Map xm,Chess xe)
-{	
-	Draw dr;
-	numPlus();
-	system("cls");
-	//dr.PrintEPTLines(5);
-	map[xe.row][xe.col].color = friendColor;
-	dr.Draw_map(xm);
-	std::cout<<"‰∫∫Êú∫Â≠êÈ¢úËâ≤: "<<define_string(map[xe.row][xe.col].color)<<std::endl;
-	std::cout<<"‰∫∫Êú∫ËêΩÂ≠ê‰ΩçÁΩÆ: ("<<xe.row<<","<<xe.col<<")"<<std::endl;
-	//system("pause");
-	Sleep(2000);
-	return;
-}
-
-void Map::putPlayChess(Chess xe)
-{
-	//Áé©ÂÆ∂ËêΩÂ≠ê
-	Draw dr;
-	numPlus();
-	map[xe.row][xe.col].color=enemyColor;
-	return;
-}
-
-void Map::outputMap()
-{
-	for(int i=1;i<=size;i++)
-	{
-		for (int j=1;j<=size;j++)
-		{;
-			std::cout<<map[i][j].atkValue<<" ";
-		}
-		std::cout<<std::endl;
-	}
-}
-
-void Map::Color_x_Initialize(int color)
-{
-	this->friendColor=color;
-	if(friendColor==XB1) enemyColor=XW0;
-	else enemyColor=XB1;
-}
-
-void Map::Friend_x_Enemy()
-{
-	if(this->friendColor==XB1)
-	{
-		this->friendColor=XW0;
-		this->enemyColor=XB1;
-	}
-	else
-	{
-		this->friendColor=XB1;
-		this->enemyColor=XW0;
-	}
-	return;
-}
-
 void Map::numPlus()
 {
 	this->num++;
 }
 
-void Map::outputChess(Chess xe)
+void Map::outputChess(Chess ce)
 {	
-	std::cout<<"color:"<<define_string(xe.color)<<std::endl;
-	std::cout<<"atkValue:"<<xe.atkValue<<std::endl;
-	std::cout<<"defValue:"<<xe.defValue<<std::endl;
-	std::cout<<"row & col: ("<<xe.row<<","<<xe.col<<")"<<std::endl;
-	std::cout<<"isBoundry:"<<bool_string(xe.isBoundry)<<std::endl;
+	/*int color;
+	int atkValue;
+	int defValue;
+	int row;
+	int col;
+	bool isBoundry;*/
+	std::cout<<"color:"<<defineToString(ce.color)<<std::endl;
+	std::cout<<"atkValue:"<<ce.atkValue<<std::endl;
+	std::cout<<"defValue:"<<ce.defValue<<std::endl;
+	std::cout<<"row & col: ("<<ce.row<<","<<ce.col<<")"<<std::endl;
+	std::cout<<"isBoundry:"<<boolToString(ce.isBoundry)<<std::endl;
 	Draw dw;
-	dw.PrintEPTLines(2);
+	dw.printEndl(2);
 }
 
-void Map::outputOneDVector(std::vector<Chess> xe)
+int Map::linkFive(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if(ce1.color==ce2.color && 
+		ce2.color==ce3.color && 
+		ce3.color==ce4.color && 
+		ce4.color==ce5.color && 
+		ce5.color==friendColor) return 1;
+	return 0;
+}
+
+int Map::liveFour(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if(ce1.color==ce6.color && 
+		ce6.color==NONE && 
+		ce2.color==ce3.color && 
+		ce3.color==ce4.color && 
+		ce4.color==ce5.color && 
+		ce5.color==friendColor) return 1;
+	return 0;
+}
+
+int Map::rushFour(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if((ce2.color==ce3.color && 
+		ce3.color==ce4.color && 
+		ce4.color==ce5.color && 
+		ce5.color==friendColor && 
+		ce1.color==NONE && 
+		ce6.color==enemyColor) ||
+		(ce2.color==ce3.color && 
+		ce3.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce6.color==NONE && 
+		ce1.color==enemyColor)) return 1;
+	return 0;
+}
+
+int Map::rushFour(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if((ce1.color==ce2.color &&
+		ce2.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce4.color==NONE) ||
+		(ce1.color==ce4.color &&
+		ce4.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce2.color==NONE)) return 1;
+	if(ce1.color==ce2.color && 
+		ce2.color==ce4.color && 
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce3.color==NONE) return 1;
+	return 0;
+}
+
+int Map::liveThree(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if(ce1.color==ce5.color && 
+		ce5.color==NONE && 
+		ce2.color==ce3.color &&
+		ce3.color==ce4.color && 
+		ce4.color== friendColor) return 1;
+	return 0;
+}
+
+int Map::liveThree(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if((ce1.color==ce4.color &&
+		ce4.color==ce6.color &&
+		ce6.color==NONE && 
+		ce2.color==ce3.color && 
+		ce3.color==ce5.color &&
+		ce5.color==friendColor) ||
+		(ce1.color==ce3.color &&
+		ce3.color==ce6.color &&
+		ce6.color==NONE && 
+		ce2.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor)) return 1;
+	return 0;
+}
+
+int Map::sleepThree(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if(ce1.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce2.color==ce3.color && 
+		ce3.color==NONE) return 1;
+	if(ce1.color==ce2.color &&
+		ce2.color==ce5.color && 
+		ce5.color==friendColor && 
+		ce4.color==ce3.color &&
+		ce3.color==NONE) return 1;
+	if(ce1.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce2.color==ce4.color &&
+		ce4.color==NONE) return 1;
+	return 0;
+}
+
+int Map::sleepThree(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if(ce1.color==ce2.color &&
+		ce2.color==NONE &&
+		ce3.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce6.color==enemyColor) return 1;
+	if(ce5.color==ce6.color &&
+		ce6.color==NONE && 
+		ce3.color==ce4.color &&
+		ce4.color==ce2.color &&
+		ce2.color==friendColor && 
+		ce1.color==enemyColor) return 1;
+	if(ce1.color==ce3.color && 
+		ce3.color==NONE && 
+		ce2.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce6.color==enemyColor) return 1;
+	if(ce4.color==ce6.color &&
+		ce6.color==NONE && 
+		ce2.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce1.color==enemyColor) return 1;
+	if(ce1.color==ce4.color &&
+		ce4.color==NONE && 
+		ce2.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce6.color==enemyColor) return 1;
+	if(ce3.color==ce6.color &&
+		ce6.color==NONE && 
+		ce2.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce1.color==enemyColor) return 1;
+	return 0;
+}
+
+int Map::sleepThree(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6,Chess ce7)
+{
+	if(ce1.color==ce7.color &&
+		ce7.color==enemyColor && 
+		ce2.color==ce6.color &&
+		ce6.color==NONE && 
+		ce3.color==ce4.color &&
+		ce4.color==ce5.color &&
+		ce5.color==friendColor) return 1;
+	return 0;
+}
+
+int Map::liveTwo(Chess ce1,Chess ce2,Chess ce3,Chess ce4)
+{
+	if(ce1.color==ce4.color &&
+		ce4.color==friendColor &&
+		ce2.color==ce3.color &&
+		ce3.color==NONE) return 1;
+	return 0;
+}
+
+int Map::liveTwo(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if(ce1.color==ce3.color &&
+		ce3.color==ce5.color &&
+		ce5.color==NONE && 
+		ce2.color==ce4.color &&
+		ce4.color==friendColor) return 1;
+	return 0;
+}
+
+int Map::liveTwo(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if(ce1.color==ce2.color &&
+		ce2.color==ce5.color &&
+		ce5.color==ce6.color &&
+		ce6.color==NONE && 
+		ce3.color==ce4.color &&
+		ce4.color==friendColor) return 1;
+	return 0;
+}
+
+int Map::sleepTwo(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5)
+{
+	if(ce1.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce2.color==ce3.color &&
+		ce3.color==ce4.color &&
+		ce4.color==NONE) return 1;
+	return 0;
+}
+
+int Map::sleepTwo(Chess ce1,Chess ce2,Chess ce3,Chess ce4,Chess ce5,Chess ce6)
+{
+	if(ce1.color==ce2.color &&
+		ce2.color==ce3.color &&
+		ce3.color==NONE && 
+		ce5.color==ce4.color &&
+		ce4.color==friendColor &&
+		ce6.color==enemyColor) return 1;
+	if(ce4.color==ce5.color &&
+		ce5.color==ce6.color &&
+		ce6.color==NONE &&
+		ce2.color==ce3.color && 
+		ce3.color==friendColor &&
+		ce1.color==enemyColor) return 1;
+	if(ce1.color==ce2.color &&
+		ce2.color==ce4.color &&
+		ce4.color==NONE && 
+		ce5.color==ce3.color && 
+		ce3.color==friendColor && 
+		ce6.color==enemyColor) return 1;
+	if(ce5.color==ce6.color &&
+		ce6.color==ce3.color &&
+		ce3.color==NONE &&
+		ce2.color==ce4.color &&
+		ce4.color==friendColor &&
+		ce1.color==enemyColor) return 1;
+	if(ce1.color==ce3.color &&
+		ce3.color==ce4.color &&
+		ce4.color==NONE && 
+		ce2.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce6.color==enemyColor) return 1;
+	if(ce3.color==ce4.color && 
+		ce4.color==ce6.color &&
+		ce6.color==NONE && 
+		ce2.color==ce5.color &&
+		ce5.color==friendColor && 
+		ce1.color==enemyColor) return 1;
+	return 0;
+}
+
+Chess Map::getNext(Chess ce, int dir)
+{//»Áπ˚±ª≤È’“µƒ∆Â◊”±æ…Ì≥¨≥ˆ±ﬂΩÁ£¨∑µªÿ¥ÌŒÛ∆Â◊”
+	if(ce.col<0 || ce.isBoundry==true) return getErrorChess();
+	Chess tmp;
+	switch(dir)
+	{
+	case LAY:
+		tmp=rightNext(ce);
+		break;
+	case STAND:
+		tmp=downNext(ce);
+		break;
+	case MAIN:
+		tmp=rightDownNext(ce);
+		break;
+	case VICE:
+		tmp=rightUpNext(ce);
+		break;
+	default:
+		break;
+	}
+	if(tmp.col<0 || tmp.isBoundry==true) return Chess("ERROR");
+	return tmp;
+}
+
+Chess Map::getPrev(Chess ce, int dir)
+{//»Áπ˚±ª≤È’“µƒ∆Â◊”±æ…Ì≥¨≥ˆ±ﬂΩÁ£¨∑µªÿ¥ÌŒÛ∆Â◊”
+	if(ce.col<0 || ce.isBoundry==true) return getErrorChess();
+	Chess tmp;
+	switch(dir)
+	{
+	case LAY:
+		tmp=leftNext(ce);
+		break;
+	case STAND:
+		tmp=upNext(ce);
+		break;
+	case MAIN:
+		tmp=leftUpNext(ce);
+		break;
+	case VICE:
+		tmp=leftDownNext(ce);
+		break;
+	default:
+		break;
+	}
+	if(tmp.col<0 || tmp.isBoundry==true) return Chess("ERROR");
+	return tmp;
+}
+
+Chess Map::getChess(int x,int y)
+{
+	return map[x][y];
+}
+
+
+void Map::outputOneDVector(std::vector<Chess> ce)
 {
 	using std::vector;
 	vector<Chess>::iterator it;
-	it=xe.begin();
-	while(it!=xe.end())
+	it=ce.begin();
+	while(it!=ce.end())
 	{
 		outputChess(*it);
 		it++;
@@ -1052,404 +500,957 @@ void Map::outputOneDVector(std::vector<Chess> xe)
 	return;
 }
 
-void Map::outputTwoDVector(std::vector<std::vector<Chess>> xe)
+void Map::outputTwoDVector(std::vector<std::vector<Chess>> ce)
 {
 	using std::vector;
 	vector<vector<Chess>>::iterator it;
-	it=xe.begin();
-	while(it!=xe.end())
+	it=ce.begin();
+	while(it!=ce.end())
 	{
 		outputOneDVector(*it);
 		it++;
 	}
 }
 
-std::vector<std::vector<Chess>> Map::getChessChain(Chess xe,int n,int loc)
+
+int Map::linkFive(std::vector<Chess> ce,int n)
+{
+	if(n==5) return linkFive(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	return 0;
+}
+
+int Map::liveFour(std::vector<Chess> ce,int n)
+{
+	if(n==6) return liveFour(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	return 0;
+}
+
+int Map::rushFour(std::vector<Chess> ce,int n)
+{
+	int count=0;
+	if(n==5) count+= rushFour(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	if(n==6) count+= rushFour(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	return count;
+}
+
+int Map::liveThree(std::vector<Chess> ce,int n)
+{
+	int count=0;
+	if(n==5) count+= liveThree(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	if(n==6) count+= liveThree(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	return count;
+}
+
+int Map::sleepThree(std::vector<Chess> ce,int n)
+{
+	int count=0;
+	if(n==5) count+= sleepThree(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	if(n==6) count+= sleepThree(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	if(n==7) count+= sleepThree(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5],ce[6]);
+	return count;
+}
+
+int Map::liveTwo(std::vector<Chess> ce,int n)
+{
+	int count=0;
+	if(n==4) count+= liveTwo(ce[0],ce[1],ce[2],ce[3]);
+	if(n==5) count+= liveTwo(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	if(n==6) count+= liveTwo(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	return count;
+}
+
+int Map::sleepTwo(std::vector<Chess> ce,int n)
+{
+	int count=0;
+	if(n==5) count+= sleepTwo(ce[0],ce[1],ce[2],ce[3],ce[4]);
+	if(n==6) count+= sleepTwo(ce[0],ce[1],ce[2],ce[3],ce[4],ce[5]);
+	return count;
+}
+
+std::vector<std::vector<Chess>> Map::getChessChain(Chess ce,int n,int loc)
 {
 	using std::vector;
-	vector<Chess> vErrorXeTxm;
-	vErrorXeTxm.push_back(getErrorChess());
-	vector<vector<Chess>> vErrorXe;
-	vErrorXe.push_back(vErrorXeTxm);
-	vector<vector<Chess>> vxe;
-	vector<Chess> vxeLay,vxeStand,vxeMain,vxeVixe;
+	vector<Chess> vErrorCeTmp;
+	vErrorCeTmp.push_back(getErrorChess());
+	vector<vector<Chess>> vErrorCe;
+	vErrorCe.push_back(vErrorCeTmp);
+	vector<vector<Chess>> vce;
+	vector<Chess> vceLay,vceStand,vceMain,vceVice;
 	switch(n)
 	{
 	case 4:
-		vxeLay=C4(xe,XLAY,loc);
-		vxeStand=C4(xe,XSTD,loc);
-		vxeMain=C4(xe,XMAN,loc);
-		vxeVixe=C4(xe,XICE,loc);
+		vceLay=fourChain(ce,LAY,loc);
+		vceStand=fourChain(ce,STAND,loc);
+		vceMain=fourChain(ce,MAIN,loc);
+		vceVice=fourChain(ce,VICE,loc);
 		break;
 	case 5:
-		vxeLay=C5(xe,XLAY,loc);
-		vxeStand=C5(xe,XSTD,loc);
-		vxeMain=C5(xe,XMAN,loc);
-		vxeVixe=C5(xe,XICE,loc);
+		vceLay=fiveChain(ce,LAY,loc);
+		vceStand=fiveChain(ce,STAND,loc);
+		vceMain=fiveChain(ce,MAIN,loc);
+		vceVice=fiveChain(ce,VICE,loc);
 		break;
 	case 6:
-		vxeLay=C6(xe,XLAY,loc);
-		vxeStand=C6(xe,XSTD,loc);
-		vxeMain=C6(xe,XMAN,loc);
-		vxeVixe=C6(xe,XICE,loc);
+		vceLay=sixChain(ce,LAY,loc);
+		vceStand=sixChain(ce,STAND,loc);
+		vceMain=sixChain(ce,MAIN,loc);
+		vceVice=sixChain(ce,VICE,loc);
 		break;
 	case 7:
-		vxeLay=C7(xe,XLAY,loc);
-		vxeStand=C7(xe,XSTD,loc);
-		vxeMain=C7(xe,XMAN,loc);
-		vxeVixe=C7(xe,XICE,loc);
+		vceLay=sevenChain(ce,LAY,loc);
+		vceStand=sevenChain(ce,STAND,loc);
+		vceMain=sevenChain(ce,MAIN,loc);
+		vceVice=sevenChain(ce,VICE,loc);
 		break;
 	default:
-		return vErrorXe;
+		return vErrorCe;
 	}
-	vxe.push_back(vxeLay);
-	vxe.push_back(vxeStand);
-	vxe.push_back(vxeMain);
-	vxe.push_back(vxeVixe);
-	return vxe;
+	vce.push_back(vceLay);
+	vce.push_back(vceStand);
+	vce.push_back(vceMain);
+	vce.push_back(vceVice);
+	return vce;
 }
 
-std::vector<Chess> Map::C4(Chess xe, int dir, int loc)
+int Map::countLinkFive(Chess ce)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
+	using std::vector;
+	int count=0;
+	for (int i=1;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=linkFive(vce,5);
+	}
+	return count;
+}
+
+int Map::countLiveFour(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=2;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveFour(vce,6);
+	}
+	return count;
+}
+
+int Map::countRushFour(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=2;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=rushFour(vce,6);
+	}
+	for(int i=1;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=rushFour(vce,5);
+	}
+	return count;
+}
+
+int Map::countLiveThree(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=2;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveThree(vce,6);//<====
+	}
+	for(int i=2;i<=4;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveThree(vce,5);
+	}
+	return count;
+}
+
+int Map::countSleepThree(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=3;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,7,i);
+		if(!chainIsOK(vce)) continue;
+		count+=sleepThree(vce,7);
+	}
+	for(int i=2;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=sleepThree(vce,6);
+	}
+	for(int i=1;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=sleepThree(vce,5);
+	}
+	return count;
+}
+
+int Map::countLiveTwo(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=3;i<=4;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveTwo(vce,6);
+	}
+	for (int i=2;i<=4;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveTwo(vce,5);
+	}
+	for(int i=1;i<=4;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,4,i);
+		if(!chainIsOK(vce)) continue;
+		count+=liveTwo(vce,4);
+	}
+	return count;
+}
+
+int Map::countSleepTwo(Chess ce)
+{
+	using std::vector;
+	int count=0;
+	for (int i=2;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,6,i);
+		if(!chainIsOK(vce)) continue;
+		count+=sleepTwo(vce,6);
+	}
+	for (int i=1;i<=5;i++)
+	{
+		vector<vector<Chess>> vce=getChessChain(ce,5,i);
+		if(!chainIsOK(vce)) continue;
+		count+=sleepTwo(vce,5);
+	}
+	return count;
+}
+
+int Map::linkFive(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=linkFive(*it,n);
+		it++;
+	}
+	return count;
+}
+
+int Map::liveFour(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=liveFour(*it,n);
+		it++;
+	}
+	return count;
+}
+
+int Map::rushFour(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=rushFour(*it,n);
+		it++;
+	}
+	return count;
+}
+
+int Map::liveThree(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=liveThree(*it,n);//<=====
+		it++;
+	}
+	return count;
+}
+
+int Map::sleepThree(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=sleepThree(*it,n);
+		it++;
+	}
+	return count;
+}
+
+int Map::liveTwo(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=liveTwo(*it,n);
+		it++;
+	}
+	return count;
+}
+
+int Map::sleepTwo(std::vector<std::vector<Chess>> ce,int n)
+{
+	using std::vector;
+	vector<vector<Chess>>::iterator it;
+	int count=0;
+	it=ce.begin();
+	while(it!=ce.end())
+	{
+		if(!chainOneDIsOk((*it)))
+		{
+			it++;
+			continue;
+		}
+		count+=sleepTwo(*it,n);
+		it++;
+	}
+	return count;
+}
+
+std::vector<Chess> Map::fourChain(Chess ce, int dir, int loc)
+{
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
 	switch (loc)
 	{
 	case 1:
-		return D1(xe,4,dir);
+		return inDirOne(ce,4,dir);
 	case 2:
-		return D2(xe,4,dir);
+		return inDirTwo(ce,4,dir);
 	case 3:
-		return D3(xe,4,dir);
+		return inDirThree(ce,4,dir);
 	case 4:
-		return D4(xe,4,dir);
+		return inDirFour(ce,4,dir);
 	default:
-		return vErrorXe;
+		return vErrorCe;
 	}
-	return vErrorXe;
+	return vErrorCe;
 }
 
-std::vector<Chess> Map::C5(Chess xe, int dir, int loc)
+std::vector<Chess> Map::fiveChain(Chess ce, int dir, int loc)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
 	switch (loc)
 	{
 	case 1:
-		return D1(xe,5,dir);
+		return inDirOne(ce,5,dir);
 	case 2:
-		return D2(xe,5,dir);
+		return inDirTwo(ce,5,dir);
 	case 3:
-		return D3(xe,5,dir);
+		return inDirThree(ce,5,dir);
 	case 4:
-		return D4(xe,5,dir);
+		return inDirFour(ce,5,dir);
 	case 5:
-		return D5(xe,5,dir);
+		return inDirFive(ce,5,dir);
 	default:
-		return vErrorXe;
+		return vErrorCe;
 	}
-	return vErrorXe;
+	return vErrorCe;
 }
 
-std::vector<Chess> Map::C6(Chess xe, int dir, int loc)
+std::vector<Chess> Map::sixChain(Chess ce, int dir, int loc)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
 	switch (loc)
 	{
 	case 1:
-		return D1(xe,6,dir);
+		return inDirOne(ce,6,dir);
 	case 2:
-		return D2(xe,6,dir);
+		return inDirTwo(ce,6,dir);
 	case 3:
-		return D3(xe,6,dir);
+		return inDirThree(ce,6,dir);
 	case 4:
-		return D4(xe,6,dir);
+		return inDirFour(ce,6,dir);
 	case 5:
-		return D5(xe,6,dir);
+		return inDirFive(ce,6,dir);
 	case 6:
-		return D6(xe,6,dir);
+		return inDirSix(ce,6,dir);
 	default:
-		return vErrorXe;
+		return vErrorCe;
 	}
-	return vErrorXe;
+	return vErrorCe;
 }
 
-std::vector<Chess> Map::C7(Chess xe, int dir, int loc)
+std::vector<Chess> Map::sevenChain(Chess ce, int dir, int loc)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
 	switch (loc)
 	{
 	case 1:
-		return D1(xe,7,dir);
+		return inDirOne(ce,7,dir);
 	case 2:
-		return D2(xe,7,dir);
+		return inDirTwo(ce,7,dir);
 	case 3:
-		return D3(xe,7,dir);
+		return inDirThree(ce,7,dir);
 	case 4:
-		return D4(xe,7,dir);
+		return inDirFour(ce,7,dir);
 	case 5:
-		return D5(xe,7,dir);
+		return inDirFive(ce,7,dir);
 	case 6:
-		return D6(xe,7,dir);
+		return inDirSix(ce,7,dir);
 	case 7:
-		return D7(xe,7,dir);
+		return inDirSeven(ce,7,dir);
 	default:
-		return vErrorXe;
+		return vErrorCe;
 	}
-	return vErrorXe;
+	return vErrorCe;
 }
 
-std::vector<Chess> Map::D1(Chess xe, int n, int dir)
-{
-	//ÈîôËØØÊï∞ÁªÑÔºåÂ¶ÇÊûúÁªìÊûú‰∏çÂêàÁêÜÔºåËøîÂõûÈîôËØØÊï∞ÁªÑ
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	//Ê£ãÂ≠ê‰Ωç‰∫éÊ£ãÈìæÁöÑ‰ΩçÁΩÆ1Â§ÑÔºåÊ£ãÈìæÈïøn,ÊñπÂêë‰∏∫dir
-	std::vector<Chess> vxe;//Áî®Êù•Â≠òÂÇ®ËØ•Ê£ãÈìæ
-	if (n < 1) return vxe;//Â¶ÇÊûúÊ£ãÂ≠êÁöÑ‰ΩçÁΩÆÊØîÊ£ãÈìæÈïøËøòÂ§ßÔºåÂàô‰∏çÂêàÂ∏∏ÁêÜ
-	Chess oxe = map[xe.row][xe.col];
-	oxe.color = friendColor;//ÂøÖÈ°ªË¶ÅÂ∞ÜÁ©∫ÁôΩ‰ΩçÊîπ‰∏∫friendColorÔºåÂê¶Âàô‰ºöÂΩ±ÂìçÂà§Êñ≠ÔºÅ
-	vxe.push_back(oxe);
-	if(n==1) return vxe;
+std::vector<Chess> Map::inDirOne(Chess ce,int n,int dir)
+{//¥ÌŒÛ ˝◊È£¨»Áπ˚Ω·π˚≤ª∫œ¿Ì£¨∑µªÿ¥ÌŒÛ ˝◊È
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	//∆Â◊”Œª”⁄∆Â¡¥µƒŒª÷√1¥¶£¨∆Â¡¥≥§n,∑ΩœÚŒ™dir
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<1) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==1) return vce;
 	for(int i=2;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
+
+	/*defineToString(dir);
+	outputOneDVector(vce);*/
 
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D2(Chess xe, int n, int dir)
+std::vector<Chess> Map::inDirTwo(Chess ce,int n,int dir)//<=====¡Ÿ ±∏ƒ±‰£°£°
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 2) return vxe;
-	Chess xe1 = getPrev(xe, dir);
-	vxe.push_back(xe1);
-	Chess oxe = map[xe.row][xe.col];
-	oxe.color = friendColor;
-	vxe.push_back(oxe);
-	if(n==2) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<2) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce1=getPrev(ce,dir);
+	vce.push_back(ce1);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);//±∑≈¡À‘Ÿ∞—‘≠¿¥µƒoce∏¯pushªÿ»•
+	if(n==2) return vce;
 	for (int i=3;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D3(Chess xe,int n,int dir)
+std::vector<Chess> Map::inDirThree(Chess ce,int n,int dir)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 3) return vxe;
-	Chess xe2 = getPrev(xe, dir);
-	Chess xe1 = getPrev(xe2, dir);
-	vxe.push_back(xe1);
-	vxe.push_back(xe2);
-	Chess oxe = map[xe.row][xe.col];
-	oxe.color = friendColor;
-	vxe.push_back(oxe);
-	if(n==3) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<3) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce2=getPrev(ce,dir);
+	Chess ce1=getPrev(ce2,dir);
+	vce.push_back(ce1);
+	vce.push_back(ce2);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==3) return vce;
 	for (int i=4;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D4(Chess xe,int n,int dir)
+std::vector<Chess> Map::inDirFour(Chess ce,int n,int dir)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 4) return vxe;
-	Chess xe1;
-	Chess xe2;
-	Chess xe3;
-	xe3=getPrev(xe,dir);
-	xe2=getPrev(xe3,dir);
-	xe1=getPrev(xe2,dir);
-	vxe.push_back(xe1);
-	vxe.push_back(xe2);
-	vxe.push_back(xe3);
-	Chess oxe=map[xe.row][xe.col];
-	oxe.color = friendColor;
-	vxe.push_back(oxe);
-	if(n==4) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<4) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce1;
+	Chess ce2;
+	Chess ce3;
+	ce3=getPrev(ce,dir);
+	ce2=getPrev(ce3,dir);
+	ce1=getPrev(ce2,dir);
+	vce.push_back(ce1);
+	vce.push_back(ce2);
+	vce.push_back(ce3);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==4) return vce;
 	for (int i=5;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D5(Chess xe,int n,int dir)
+std::vector<Chess> Map::inDirFive(Chess ce,int n,int dir)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 5) return vxe;
-	Chess xe1;
-	Chess xe2;
-	Chess xe3;
-	Chess xe4;
-	xe4=getPrev(xe,dir);
-	xe3=getPrev(xe4,dir);
-	xe2=getPrev(xe3,dir);
-	xe1=getPrev(xe2,dir);
-	vxe.push_back(xe1);
-	vxe.push_back(xe2);
-	vxe.push_back(xe3);
-	vxe.push_back(xe4);
-	Chess oxe=map[xe.row][xe.col];
-	oxe.color = friendColor;
-	vxe.push_back(oxe);
-	if(n==5) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<5) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce1;
+	Chess ce2;
+	Chess ce3;
+	Chess ce4;
+	ce4=getPrev(ce,dir);
+	ce3=getPrev(ce4,dir);
+	ce2=getPrev(ce3,dir);
+	ce1=getPrev(ce2,dir);
+	vce.push_back(ce1);
+	vce.push_back(ce2);
+	vce.push_back(ce3);
+	vce.push_back(ce4);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==5) return vce;
 	for (int i=6;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D6(Chess xe,int n,int dir)
+std::vector<Chess> Map::inDirSix(Chess ce,int n,int dir)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 6) return vxe;
-	Chess xe1;
-	Chess xe2;
-	Chess xe3;
-	Chess xe4;
-	Chess xe5;
-	xe5=getPrev(xe,dir);
-	xe4=getPrev(xe5,dir);
-	xe3=getPrev(xe4,dir);
-	xe2=getPrev(xe3,dir);
-	xe1=getPrev(xe2,dir);
-	vxe.push_back(xe1);
-	vxe.push_back(xe2);
-	vxe.push_back(xe3);
-	vxe.push_back(xe4);
-	vxe.push_back(xe5);
-	Chess oxe=map[xe.row][xe.col];
-	oxe.color = friendColor;
-	vxe.push_back(oxe);
-	if(n==6) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<6) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce1;
+	Chess ce2;
+	Chess ce3;
+	Chess ce4;
+	Chess ce5;
+	ce5=getPrev(ce,dir);
+	ce4=getPrev(ce5,dir);
+	ce3=getPrev(ce4,dir);
+	ce2=getPrev(ce3,dir);
+	ce1=getPrev(ce2,dir);
+	vce.push_back(ce1);
+	vce.push_back(ce2);
+	vce.push_back(ce3);
+	vce.push_back(ce4);
+	vce.push_back(ce5);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==6) return vce;
 	for (int i=7;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::vector<Chess> Map::D7(Chess xe,int n,int dir)
+std::vector<Chess> Map::inDirSeven(Chess ce,int n,int dir)
 {
-	std::vector<Chess> vErrorXe;
-	vErrorXe.push_back(getErrorChess());
-	std::vector<Chess> vxe;
-	if (n < 7) return vxe;
-	Chess xe1;
-	Chess xe2;
-	Chess xe3;
-	Chess xe4;
-	Chess xe5;
-	Chess xe6;
-	xe6=getPrev(xe,dir);
-	xe5=getPrev(xe6,dir);
-	xe4=getPrev(xe5,dir);
-	xe3=getPrev(xe4,dir);
-	xe2=getPrev(xe3,dir);
-	xe1=getPrev(xe2,dir);
-	vxe.push_back(xe1);
-	vxe.push_back(xe2);
-	vxe.push_back(xe3);
-	vxe.push_back(xe4);
-	vxe.push_back(xe5);
-	vxe.push_back(xe6);
-	Chess oxe=map[xe.row][xe.col];
-	oxe.color = friendColor;//ÂøÖÈ°ªË¶ÅÂ∞ÜÁ©∫ÁôΩ‰ΩçÊîπ‰∏∫friendColorÔºåÂê¶Âàô‰ºöÂΩ±ÂìçÂà§Êñ≠ÔºÅ
-	vxe.push_back(oxe);
-	if(n==7) return vxe;
+	std::vector<Chess> vErrorCe;
+	vErrorCe.push_back(getErrorChess());
+	std::vector<Chess> vce;//”√¿¥¥Ê¥¢∏√∆Â¡¥
+	if(n<7) return vce;//»Áπ˚∆Â◊”µƒŒª÷√±»∆Â¡¥≥§ªπ¥Û£¨‘Ú≤ª∫œ≥£¿Ì
+	Chess ce1;
+	Chess ce2;
+	Chess ce3;
+	Chess ce4;
+	Chess ce5;
+	Chess ce6;
+	ce6=getPrev(ce,dir);
+	ce5=getPrev(ce6,dir);
+	ce4=getPrev(ce5,dir);
+	ce3=getPrev(ce4,dir);
+	ce2=getPrev(ce3,dir);
+	ce1=getPrev(ce2,dir);
+	vce.push_back(ce1);
+	vce.push_back(ce2);
+	vce.push_back(ce3);
+	vce.push_back(ce4);
+	vce.push_back(ce5);
+	vce.push_back(ce6);
+	Chess oce=map[ce.row][ce.col];
+	oce.color=friendColor;//<===±ÿ–Î“™Ω´ø’∞◊Œª∏ƒŒ™friendColor£¨∑Ò‘Úª·”∞œÏ≈–∂œ£°£°£°
+	vce.push_back(oce);
+	if(n==7) return vce;
 	for (int i=8;i<=n;i++)
 	{
-		Chess temXe;
-		temXe=getNext(vxe[i-2],dir);
-		vxe.push_back(temXe);
+		Chess tmpCe;
+		tmpCe=getNext(vce[i-2],dir);
+		vce.push_back(tmpCe);
 	}
 	for (int i=0;i<n;i++)
 	{
-		if(vxe[i].isBoundry) return vErrorXe;
+		if(vce[i].isBoundry) return vErrorCe;
 	}
-	return vxe;
+	return vce;
 }
 
-std::string Map::define_string(int code)
+Chess Map::upNext(Chess ce)
+{
+	if(ce.row<=0) return getErrorChess();
+	Chess tmp=Chess(map[ce.row-1][ce.col].color,
+		map[ce.row-1][ce.col].atkValue,
+		map[ce.row-1][ce.col].defValue,
+		map[ce.row-1][ce.col].row,
+		map[ce.row-1][ce.col].col,
+		map[ce.row-1][ce.col].isBoundry);
+	return tmp;
+}
+
+Chess Map::downNext(Chess ce)
+{
+	if(ce.row>=size+1) return getErrorChess();
+	Chess tmp=Chess(map[ce.row+1][ce.col].color,
+		map[ce.row+1][ce.col].atkValue,
+		map[ce.row+1][ce.col].defValue,
+		map[ce.row+1][ce.col].row,
+		map[ce.row+1][ce.col].col,
+		map[ce.row+1][ce.col].isBoundry);
+	return tmp;
+}
+
+Chess Map::leftNext(Chess ce)
+{
+	if(ce.col<=0) return getErrorChess();
+	Chess tmp=Chess(map[ce.row][ce.col-1].color,
+		map[ce.row][ce.col-1].atkValue,
+		map[ce.row][ce.col-1].defValue,
+		map[ce.row][ce.col-1].row,
+		map[ce.row][ce.col-1].col,
+		map[ce.row][ce.col-1].isBoundry);
+	return tmp;
+}
+
+Chess Map::rightNext(Chess ce)
+{
+	if(ce.col>=size+1) return getErrorChess();
+	Chess tmp=Chess(map[ce.row][ce.col+1].color,
+		map[ce.row][ce.col+1].atkValue,
+		map[ce.row][ce.col+1].defValue,
+		map[ce.row][ce.col+1].row,
+		map[ce.row][ce.col+1].col,
+		map[ce.row][ce.col+1].isBoundry);
+	return tmp;
+}
+
+Chess Map::leftUpNext(Chess ce)
+{
+	if(ce.row<=0 || ce.col<=0) return getErrorChess();
+	Chess tmp=Chess(map[ce.row-1][ce.col-1].color,
+		map[ce.row-1][ce.col-1].atkValue,
+		map[ce.row-1][ce.col-1].defValue,
+		map[ce.row-1][ce.col-1].row,
+		map[ce.row-1][ce.col-1].col,
+		map[ce.row-1][ce.col-1].isBoundry);
+	return tmp;
+}
+
+Chess Map::rightUpNext(Chess ce)
+{
+	if(ce.row<=0 || ce.col>=size+1) return getErrorChess();
+	Chess tmp=Chess(map[ce.row-1][ce.col+1].color,
+		map[ce.row-1][ce.col+1].atkValue,
+		map[ce.row-1][ce.col+1].defValue,
+		map[ce.row-1][ce.col+1].row,
+		map[ce.row-1][ce.col+1].col,
+		map[ce.row-1][ce.col+1].isBoundry);
+	return tmp;
+}
+
+Chess Map::leftDownNext(Chess ce)
+{
+	if(ce.row>=size+1 || ce.col<=0) return getErrorChess();
+	Chess tmp=Chess(map[ce.row+1][ce.col-1].color,
+		map[ce.row+1][ce.col-1].atkValue,
+		map[ce.row+1][ce.col-1].defValue,
+		map[ce.row+1][ce.col-1].row,
+		map[ce.row+1][ce.col-1].col,
+		map[ce.row+1][ce.col-1].isBoundry);
+	return tmp;
+}
+
+Chess Map::rightDownNext(Chess ce)
+{
+	if(ce.row>=size+1 || ce.col>=size+1) return getErrorChess();
+	Chess tmp=Chess(map[ce.row+1][ce.col+1].color,
+		map[ce.row+1][ce.col+1].atkValue,
+		map[ce.row+1][ce.col+1].defValue,
+		map[ce.row+1][ce.col+1].row,
+		map[ce.row+1][ce.col+1].col,
+		map[ce.row+1][ce.col+1].isBoundry);
+	return tmp;
+}
+
+int Map::getLayNum(Chess ce)
+{
+	int count=0;
+	count+=left(ce);
+	count+=right(ce);
+	return count+1;
+}
+
+int Map::getStandNum(Chess ce)
+{
+	int count=0;
+	count+=up(ce);
+	count+=down(ce);
+	return count+1;
+}
+
+int Map::getMainNum(Chess ce)
+{
+	int count=0;
+	count+=leftUp(ce);
+	count+=rightDown(ce);
+	return count+1;
+}
+
+int Map::getViceNum(Chess ce)
+{
+	int count=0;
+	count+=rightUp(ce);
+	count+=leftDown(ce);
+	return count+1;
+}
+
+int Map::up(Chess ce)
+{
+	int count=0;
+	ce.row--;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row--;
+	}
+	return count;
+}
+
+int Map::down(Chess ce)
+{
+	int count=0;
+	ce.row++;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row++;
+	}
+	return count;
+}
+
+int Map::left(Chess ce)
+{
+	int count=0;
+	ce.col--;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.col--;
+	}
+	return count;
+}
+
+int Map::right(Chess ce)
+{
+	int count=0;
+	ce.col++;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.col++;
+	}
+	return count;
+}
+
+int Map::leftUp(Chess ce)
+{
+	int count=0;
+	ce.row--;
+	ce.col--;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row--; 
+		ce.col--;
+	}
+	return count;
+}
+
+int Map::rightUp(Chess ce)
+{
+	int count=0;
+	ce.row--;
+	ce.col++;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row--; 
+		ce.col++;
+	}
+	return count;
+}
+
+int Map::leftDown(Chess ce)
+{
+	int count=0;
+	ce.row++; ce.col--;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row++; 
+		ce.col--;
+	}
+	return count;
+}
+
+int Map::rightDown(Chess ce)
+{
+	int count=0;
+	ce.row++; ce.col++;
+	while(map[ce.row][ce.col].color==friendColor)
+	{
+		count++; 
+		ce.row++; 
+		ce.col++;
+	}
+	return count;
+}
+
+std::string Map::defineToString(int code)
 {
 	switch(code)
 	{
-	case XB1:
-		return "XB1";
-	case XW0:
-		return "XW0";
-	case XNO:
-		return "XNO";
-	case XLAY:
-		return "XLAY";
-	case XSTD:
-		return "XSTD";
-	case XMAN:
-		return "XMAN";
-	case XICE:
-		return "XICE";
+	case BLACK:
+		return "BLACK";
+	case WHITE:
+		return "WHITE";
+	case NONE:
+		return "NONE";
+	case LAY:
+		return "LAY";
+	case STAND:
+		return "STAND";
+	case MAIN:
+		return "MAIN";
+	case VICE:
+		return "VICE";
 	default:
-		return "XERRO";
+		return "ERROR";
 	}
-	return "XERRO";
+	return "ERROR";
 }
 
-std::string Map::bool_string(bool flag)
+std::string Map::boolToString(bool flag)
 {
 	switch(flag)
 	{
@@ -1461,25 +1462,31 @@ std::string Map::bool_string(bool flag)
 	return "false";
 }
 
-bool Map::XB1_x_OK(std::vector<Chess> xe)
+Chess Map::getErrorChess()
+{
+	Chess ce=Chess(ERROR,ERROR,ERROR,ERROR,ERROR,true);
+	return ce;
+}
+
+bool Map::chainOneDIsOk(std::vector<Chess> ce)
 {
 	using std::vector;
 	vector<Chess>::iterator it;
-	it=xe.begin();
-	while(it!=xe.end())
+	it=ce.begin();
+	while(it!=ce.end())
 	{
-		if((*it).isBoundry) return false;//Â¶ÇÊûúÊòØËæπÁïåÊàñËÄÖÈîôËØØÊ£ãÂ≠êÔºåÈÇ£‰πàÂ∞±‰∏çok
+		if((*it).isBoundry) return false;//»Áπ˚ «±ﬂΩÁªÚ’ﬂ¥ÌŒÛ∆Â◊”£¨ƒ«√¥æÕ≤ªok
 		it++;
 	}
 	return true;
 }
 
-bool Map::Chain_x_OK(std::vector<std::vector<Chess>> vxe)
+bool Map::chainIsOK(std::vector<std::vector<Chess>> vce)
 {
 	using std::vector;
 	vector<vector<Chess>>::iterator it;
-	it=vxe.begin();
-	while(it!=vxe.end())
+	it=vce.begin();
+	while(it!=vce.end())
 	{
 		vector<Chess>::iterator it2;
 		it2=(*it).begin();
@@ -1493,4 +1500,18 @@ bool Map::Chain_x_OK(std::vector<std::vector<Chess>> vxe)
 	return false;
 }
 
+//bool Map::chainIsOk(std::vector<std::vector<Chess>> ce)
+//{
+//	using std::vector;
+//	vector<Chess>::iterator iter1;//“ªŒ¨ ˝◊Èµ¸¥˙∆˜
+//	vector<vector<Chess>>::iterator iter2;//∂˛Œ¨ ˝◊Èµ¸¥˙∆˜
+//	for(iter2=ce.begin();iter2!=ce.end();iter2++)
+//	{
+//		for(iter1=(*iter2).begin();iter1!=(*iter2).end();iter1++)
+//		{
+//			if((*iter1).isBoundry) return false;
+//		}
+//	}
+//	return true;
+//}//≤ª“™≈–∂œ∂˛Œ¨ ˝◊È£¨≤ªƒ‹Õ®π˝æ÷≤ø∑Ò∂®’˚ÃÂ
 

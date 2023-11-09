@@ -1,118 +1,119 @@
 #include "Draw.h"
 #include "Map.h"
-#include "Robot.h"
+#include "ChessRobot.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
+
 
 Draw::Draw(void)
 {
 }
 
+
 Draw::~Draw(void)
 {
 }
 
-void Draw::Draw_map(Map xm)
+void Draw::drawMap(Map mp)
 {
-	/*
-	æ‰“å°æ£‹å­&æ£‹ç›˜
-	â”â”¬â”¬â”¬â”¬â”’
-	â” â”¼â—‹â—â”¼â”¨
-	â” â”¼â”¼â—â”¼â”¨
-	â” â”¼â”¼â”¼â”¼â”¨
-	â”–â”·â”·â”·â”·â”š  
-	*/
-	char number[15] = { 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O' };//å­—æ¯A-Oè¡¨ç¤º1-15ã€‚
-	PrintEPTLines(2);
-	PrintSpc(7);
-	for (int i = 1; i <= xm.getSize(); i++)
+  /*©²©Ğ©Ğ©Ğ©Ğ©Ğ©¶
+	©Ä©à©à©à©à©à©Ì
+	©Ä©à©à¡ğ¡ñ©à©Ì
+	©Ä©à©à¡ñ©à©à©Ì
+	©Ä©à©à©à©à©à©Ì
+	©Ä©à©à©à©à©à©Ì
+	©º©Û©Û©Û©Û©Û©¾*/
+	char number[6]={'A','B','C','D','E','F'};//Á½Î»Êı»»³É×ÖÄ¸£¬±£Ö¤Êä³ö²»»á³ö´í¡£
+	printEndl(3);
+	printBlock(8);
+	for(int i=1;i<=mp.getSize();i++)
 	{
-		std::cout << number[i - 1] << " ";
+		if(i<10) std::cout<<i<<" ";
+		else std::cout<<number[i-10]<<" ";
 	}
-	PrintEPTLines(1);
-	PrintSpc(5);
-	PrintString("â”");
-	for (int i = 1; i <= xm.getSize(); i++) PrintString(" â”¬");
-	PrintString(" â”’");
-	PrintEPTLines(1);
-	for (int i = 1; i <= xm.getSize(); i++)
+	printEndl(1);
+	printBlock(5);
+	outputString("©² ");
+	for(int i=1;i<=mp.getSize();i++) outputString("©Ğ ");
+	outputString("©¶");
+	printEndl(1);
+	for (int i=1;i<=mp.getSize();i++)
 	{
-		PrintSpc(4);
-		std::cout << number[i - 1];
-		PrintString("â”  ");
-		for (int j = 1; j <= xm.getSize(); j++)
+		printBlock(4);
+		if(i<10) std::cout<<i;
+		else std::cout<<number[i-10];
+		outputString("©Ä ");
+		for(int j=1;j<=mp.getSize();j++)
 		{
-			if (xm.getChess(i, j).color == XNO) PrintString("â”¼ ");
-			else if (xm.getChess(i, j).color == XB1) PrintString("â—‹ "); //â—‹ä¸ºé»‘æ£‹ï¼Œâ—ä¸ºç™½æ£‹
-			else PrintString("â— ");
+			if(mp.getChess(i,j).color==NONE) outputString("©à ");
+			else if(mp.getChess(i,j).color==BLACK) outputString("¡ğ");
+			else outputString("¡ñ");
 		}
-		PrintString("â”¨");
-		PrintEPTLines(1);
+		outputString("©Ì");
+		printEndl(1);
 	}
-	PrintSpc(5);
-	PrintString("â”– ");
-	for (int i = 1; i <= xm.getSize(); i++) PrintString("â”· ");
-	PrintString("â”š");
-	PrintEPTLines(3);
+	printBlock(5);
+	outputString("©º ");
+	for(int i=1;i<=mp.getSize();i++) outputString("©Û ");
+	outputString("©¾");
+
+	printEndl(3);
 }
 
-void Draw::Error_x_Report() 
+void Draw::errorReport()
+{
+	Draw dw;
+	system("cls");
+	dw.printEndl(5);
+	dw.printBlock(5);
+	dw.outputString("ÊäÈë´íÎó£¬ÇëÖØĞÂÊäÈë£¡");
+	dw.printEndl(5);
+	Sleep(2000);
+	return;
+}
+
+void Draw::youWin(Map mp)
 {
 	system("cls");
-	PrintEPTLines(5);
-	PrintSpc(5);
-	PrintString("è¾“å…¥é”™è¯¯ï¼Œè¯·é‡æ–°è¾“å…¥ï¼");
-	PrintEPTLines(2);
-	system("pause");
+	printEndl(10);
+	printBlock(10);
+	std::cout<<"ÄãÓ®ÁË£¡"<<std::endl;
+	Sleep(3000);
+	system("cls");
+	drawMap(mp);
+	return;
 }
 
-void Draw::Player_win(Map& xm) 
+void Draw::youLose(Map mp)
 {
 	system("cls");
-	PrintEPTLines(10);
-	PrintSpc(10);
-	std::cout << "ä½ èµ¢äº†ï¼" << std::endl;
-	Sleep(2500);
+	printEndl(10);
+	printBlock(10);
+	std::cout<<"ÄãÊäÁË£¡"<<std::endl;
+	Sleep(3000);
 	system("cls");
-	Draw_map(xm);
+	drawMap(mp);
+	return;
 }
 
-void Draw::Player_loss(Map& xm) 
+void Draw::printEndl(int n)
 {
-	system("cls");
-	PrintEPTLines(10);
-	PrintSpc(10);
-	std::cout << "ä½ è¾“äº†ï¼" << std::endl;
-	Sleep(2500);
-	system("cls");
-	Draw_map(xm);
+	for (int i=0;i<n;i++) std::cout<<std::endl;
 }
 
-void Draw::PrintEPTLines(int n) 
+void Draw::printBlock(int n)
 {
-	for (int i = 0; i < n; i++) std::cout << std::endl;
+	for(int i=0;i<n;i++) std::cout<<" ";
 }
 
-void Draw::PrintSpc(int n) 
+void Draw::outputString(std::string str)
 {
-	for (int i = 0; i < n; i++) std::cout << " ";
+	std::cout<<str;
 }
 
-void Draw::PrintString(const std::string& str) 
+void Draw::pleaseInput()
 {
-	std::cout << str;
-}
-
-void Draw::PrintMessage(int color) 
-{
-	PrintEPTLines(1);
-	PrintString("A1 B2 C3 D4 E5 F6 G7 H8 I9 J10 K11 L12 M13 N14 O15 \n");
-	PrintEPTLines(2);
-	if (color == 1) {
-		PrintString("è¯·è¾“å…¥ä¸‹ä¸€æ£‹çš„åæ ‡(é»‘æ£‹) ä¾‹: A/1 å›è½¦/ç©ºæ ¼ B/2 :");
-	}
-	else {
-		PrintString("è¯·è¾“å…¥ä¸‹ä¸€æ£‹çš„åæ ‡(ç™½æ£‹) ä¾‹: A/1 å›è½¦/ç©ºæ ¼ B/2 :");
-	}
+	printEndl(3);
+	outputString("ÇëÊäÈë ÏÂÆåµÄ (ºá,×İ) ×ø±ê:");
 }
